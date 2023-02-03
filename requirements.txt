@@ -3,6 +3,10 @@
 
 # external requirements
 click
+ipykernel
+ipywidgets
+ipyevents
+pyvista
 
 numpy
 scikit-learn
