@@ -13,4 +13,6 @@ matplotlib
 mne
 tqdm
 
+pyvistaqt
+
 
