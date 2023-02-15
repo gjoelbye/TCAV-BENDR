@@ -18,7 +18,7 @@ raw = get_raw(edf_file_path)
 
 mne.datasets.fetch_hcp_mmp_parcellation(subjects_dir=subjects_dir, accept=True)
 labels_lh = mne.read_labels_from_annot('fsaverage', 'HCPMMP1', 'lh', subjects_dir=subjects_dir, verbose=False)
-labels_rh = mne.read_labels_from_annot('fsaverage', 'HCPMMP1', 'lh', subjects_dir=subjects_dir, verbose=False)
+labels_rh = mne.read_labels_from_annot('fsaverage', 'HCPMMP1', 'rh', subjects_dir=subjects_dir, verbose=False)
 labels = [labels_lh, labels_rh]
 
 src = get_src(src_path)
