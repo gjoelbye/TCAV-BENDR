@@ -67,5 +67,5 @@ def animate(i):
 anim = animation.FuncAnimation(fig, animate, init_func=init,
                                frames=tqdm(range(0, 360, 1), file=sys.stdout), blit=True)
 # Save
-anim.save('region_animation.mp4', fps=30, writer="ffmpeg",
+anim.save('region_animation_high.mp4', fps=30, writer="ffmpeg",
           extra_args=['-vcodec', 'libx264'])
