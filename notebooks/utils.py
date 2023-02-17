@@ -8,7 +8,6 @@ import vtk
 from vtk import vtkPolyData, vtkDecimatePro
 from vtk.util.numpy_support import vtk_to_numpy
 
-
 def get_raw(edf_file_path, filter = True):
     raw = mne.io.read_raw_edf(edf_file_path, verbose=False, preload=True)
     mne.datasets.eegbci.standardize(raw)  # Set channel names
@@ -20,8 +19,6 @@ def get_raw(edf_file_path, filter = True):
     if filter:
         raw = raw.filter(0.5, 70, verbose = False)
         raw = raw.notch_filter(60, verbose = False)
-
-
 
     return raw
 
@@ -72,8 +69,8 @@ def get_stc(raw, fwd, cov, tmin=0, tmax=10, snr = 1.0, verbose = False):
 def get_labels(subjects_dir, parcellation_name = "aparc_sub", verbose = False):
     mne.datasets.fetch_hcp_mmp_parcellation(subjects_dir=subjects_dir, accept=True)
 
-    labels_lh = mne.read_labels_from_annot('fsaverage', parcellation_name, 'lh', subjects_dir=subjects_dir, verbose=False) 
-    labels_rh = mne.read_labels_from_annot('fsaverage', parcellation_name, 'rh', subjects_dir=subjects_dir, verbose=False)
+    labels_lh = mne.read_labels_from_annot('fsaverage', parcellation_name, 'lh', subjects_dir=subjects_dir, verbose=verbose) 
+    labels_rh = mne.read_labels_from_annot('fsaverage', parcellation_name, 'rh', subjects_dir=subjects_dir, verbose=verbose)
     labels = [labels_lh, labels_rh]
     return labels
 
@@ -158,6 +155,7 @@ def decimate_mesh(vertices, triangles, values=None, reduction = 0.5, verbose = F
     
     return vertices_down, triangles_down, values_down
 
+
 def get_z_values(vertices, tris):
     highest = np.max(vertices[:, :, 2].flatten())
     lowest = np.min(vertices[:, :, 2].flatten())
@@ -218,7 +216,7 @@ def activity_to_source_values(activity, labels, sources):
             values[hemi][labels[hemi][i].get_vertices_used()] = activity[hemi][i]
     return values
 
-def vertex_values_to_tris_values(tris_sources, values, func=np.mean):
+def vertex_values_to_tris_values(values, tris, func=np.mean):
     # tris_values = get_z_values(sources, tris_sources)
     # tris_colors = cm.viridis(tris_values)
 
@@ -228,8 +226,8 @@ def vertex_values_to_tris_values(tris_sources, values, func=np.mean):
     #         region_tris_indices = get_tris_idx(region_source_indices, tris_sources[hemi])
     #         tris_colors[hemi][region_tris_indices] = cm.viridis(values[hemi][i])
 
-    tris_values = np.zeros(tris_sources.shape[:2])
+    tris_values = np.zeros(tris.shape[:2])
     for hemi in range(2):
-        for i, (a, b, c) in enumerate(tris_sources[hemi]):
+        for i, (a, b, c) in enumerate(tris[hemi]):
             tris_values[hemi][i] = func(values[hemi][[a,b,c]])
     return tris_values
