@@ -56,10 +56,17 @@ def get_cov(raw):
     return cov
 
 
-def get_stc(raw, fwd, cov, tmin=0, tmax=10, snr = 1.0, verbose = False):
+def get_stc(raw, fwd, cov, tmin=None, tmax=None, snr = 1.0, verbose = False):
 
-    idx_start = int(tmin * raw.info['sfreq'])
-    idx_stop = int(tmax * raw.info['sfreq'])
+    if tmin is not None:
+        idx_start = int(tmin * raw.info['sfreq'])
+    else:
+        idx_start = None
+    
+    if tmax is not None:
+        idx_stop = int(tmax * raw.info['sfreq'])
+    else:
+        idx_stop = None
 
     lambda2 = 1.0 / snr ** 2 # Use smaller SNR for raw data
     method = "eLORETA"
