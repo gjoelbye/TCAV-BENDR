@@ -69,15 +69,13 @@ def get_stc(raw, fwd, cov, tmin=0, tmax=10, snr = 1.0, verbose = False):
 
     return stc
 
-def get_labels(subjects_dir, subject, verbose = False):
-    mne.datasets.fetch_aparc_sub_parcellation(subjects_dir=subjects_dir, verbose=verbose)
-    labels = mne.read_labels_from_annot(subject, verbose=verbose)
+def get_labels(subjects_dir, parcellation_name = "aparc_sub", verbose = False):
+    mne.datasets.fetch_hcp_mmp_parcellation(subjects_dir=subjects_dir, accept=True)
 
-    label_names = []
-    for label in labels:
-        label_names.append(label.name)
-
-    return labels, label_names
+    labels_lh = mne.read_labels_from_annot('fsaverage', parcellation_name, 'lh', subjects_dir=subjects_dir, verbose=False) 
+    labels_rh = mne.read_labels_from_annot('fsaverage', parcellation_name, 'rh', subjects_dir=subjects_dir, verbose=False)
+    labels = [labels_lh, labels_rh]
+    return labels
 
 
 ### EXTRACT DATA ###
@@ -189,3 +187,49 @@ def get_tris_idx(vertex_indices, tris):
             idx += 1
 
     return tris_indices[:idx]
+
+def get_power_per_label(stc, labels, standardize = True):
+    activity = [np.empty(len(labels[0])), np.empty(len(labels[1]))]
+
+    for hemi in range(2):
+        for i in range(len(labels[hemi])):
+            activity[hemi][i] = np.mean(stc.in_label(labels[hemi][i]).data**2)
+
+    if standardize:
+        min_act = np.min(np.concatenate((activity[0], activity[1])))
+        max_act = np.max(np.concatenate((activity[0], activity[1])))
+
+        activity[0] = (activity[0] - min_act) / (max_act - min_act)
+        activity[1] = (activity[1] - min_act) / (max_act - min_act)
+
+    return activity
+
+def activity_to_vertex_values(activity, labels, vertices):
+    values = np.zeros(vertices.shape[:2])
+    for hemi in range(2):
+        for i in range(len(labels[hemi])):
+            values[hemi][labels[hemi][i].vertices] = activity[hemi][i]
+    return values
+
+def activity_to_source_values(activity, labels, sources):
+    values = np.zeros(sources.shape[:2])
+    for hemi in range(2):
+        for i in range(len(labels[hemi])):
+            values[hemi][labels[hemi][i].get_vertices_used()] = activity[hemi][i]
+    return values
+
+def vertex_values_to_tris_values(tris_sources, values, func=np.mean):
+    # tris_values = get_z_values(sources, tris_sources)
+    # tris_colors = cm.viridis(tris_values)
+
+    # for hemi in range(2):
+    #     for i in tqdm(range(len(labels[hemi]))):
+    #         region_source_indices = labels[hemi][i].get_vertices_used()
+    #         region_tris_indices = get_tris_idx(region_source_indices, tris_sources[hemi])
+    #         tris_colors[hemi][region_tris_indices] = cm.viridis(values[hemi][i])
+
+    tris_values = np.zeros(tris_sources.shape[:2])
+    for hemi in range(2):
+        for i, (a, b, c) in enumerate(tris_sources[hemi]):
+            tris_values[hemi][i] = func(values[hemi][[a,b,c]])
+    return tris_values
