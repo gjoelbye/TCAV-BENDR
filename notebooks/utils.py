@@ -21,9 +21,12 @@ def get_raw(edf_file_path, filter = True):
         raw = raw.filter(0.5, 70, verbose = False)
         raw = raw.notch_filter(60, verbose = False)
 
-
-
     return raw
+
+def get_annotations(edf_file_path):
+    annotations = mne.read_annotations(edf_file_path)
+
+    return annotations
 
 def get_fsaverage(verbose = False):
     # Download fsaverage files
