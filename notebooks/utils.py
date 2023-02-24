@@ -56,7 +56,15 @@ def get_cov(raw):
     return cov
 
 
-def get_stc(raw, fwd, cov, tmin=None, tmax=None, snr = 1.0, verbose = False):
+def make_fast_inverse_operator(info, fwd, cov, method="eLORETA", snr=3, nave=1, verbose=False):
+    lambda2 = 1/snr**2
+    inv = mne.minimum_norm.make_inverse_operator(info, fwd, cov, verbose=verbose)
+    inv = mne.minimum_norm.prepare_inverse_operator(inv, nave, lambda2, method=method, verbose=verbose)
+    
+    func = lambda x: mne.minimum_norm.apply_inverse_raw(x, inv, lambda2, method=method, nave=nave, prepared=True, verbose=verbose)
+    return func
+
+def get_stc(raw, fwd, cov, tmin=None, tmax=None, snr = 3, method="eLORETA", nave = 1, verbose = False):
 
     if tmin is not None:
         idx_start = int(tmin * raw.info['sfreq'])
@@ -69,11 +77,10 @@ def get_stc(raw, fwd, cov, tmin=None, tmax=None, snr = 1.0, verbose = False):
         idx_stop = None
 
     lambda2 = 1.0 / snr ** 2 # Use smaller SNR for raw data
-    method = "eLORETA"
 
     inv = mne.minimum_norm.make_inverse_operator(raw.info, fwd, cov, verbose=verbose)
     stc = mne.minimum_norm.apply_inverse_raw(raw, inv, lambda2, method=method,
-                                             nave = 1, start=idx_start, stop=idx_stop,
+                                             nave = nave, start=idx_start, stop=idx_stop,
                                              verbose=verbose)
 
     return stc
