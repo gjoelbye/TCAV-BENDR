@@ -250,3 +250,22 @@ def vertex_values_to_tris_values(values, tris, func=np.mean):
         for i, (a, b, c) in enumerate(tris[hemi]):
             tris_values[hemi][i] = func(values[hemi][[a,b,c]])
     return tris_values
+
+
+def get_window(raw, annotation):
+    window = raw.copy().crop(tmin=annotation['onset'], tmax=annotation['onset']+annotation['duration'])
+    
+    return window
+
+def get_window_dict(raw, annotations):
+    window_dict = {}
+
+    for description in np.unique(annotations.description):
+
+        list_of_windows = []
+        for annotation in annotations[annotations.description==description]:
+            list_of_windows.append(get_window(raw, annotation))
+
+        window_dict[description] = list_of_windows
+
+    return window_dict
