@@ -164,7 +164,7 @@ def decimate_mesh(vertices, triangles, values=None, reduction = 0.5, verbose = F
     triangles_down = triangles_down.reshape(int(len(triangles_down)/4), 4)[:, 1:]
     vertices_down = vtk_to_numpy(dpd.GetPoints().GetData())
     values_down = vtk_to_numpy(dpd.GetPointData().GetScalars())
-    
+        
     return vertices_down, triangles_down, values_down
 
 
