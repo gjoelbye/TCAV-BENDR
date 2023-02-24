@@ -17,8 +17,8 @@ subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
 raw = get_raw(edf_file_path)
 
 mne.datasets.fetch_hcp_mmp_parcellation(subjects_dir=subjects_dir, accept=True)
-labels_lh = mne.read_labels_from_annot('fsaverage', 'HCPMMP1', 'lh', subjects_dir=subjects_dir, verbose=False)
-labels_rh = mne.read_labels_from_annot('fsaverage', 'HCPMMP1', 'rh', subjects_dir=subjects_dir, verbose=False)
+labels_lh = mne.read_labels_from_annot('fsaverage', 'aparc_sub', 'lh', subjects_dir=subjects_dir, verbose=False)
+labels_rh = mne.read_labels_from_annot('fsaverage', 'aparc_sub', 'rh', subjects_dir=subjects_dir, verbose=False)
 labels = [labels_lh, labels_rh]
 
 src = get_src(src_path)
@@ -67,5 +67,4 @@ def animate(i):
 anim = animation.FuncAnimation(fig, animate, init_func=init,
                                frames=tqdm(range(0, 360, 1), file=sys.stdout), blit=True)
 # Save
-anim.save('region_animation_high.mp4', fps=30, writer="ffmpeg",
-          extra_args=['-vcodec', 'libx264'])
+anim.save('region_animation_high_aparc_sub.gif', fps=30, writer="ffmpeg")
