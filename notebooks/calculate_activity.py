@@ -42,19 +42,20 @@ pbar = tqdm()
 
 for (dirpath, _, filenames) in os.walk(mmidb_path):
     for filename in filenames:
-        if filename.endswith(".edf"):            
-            raw = get_raw(edf_file_path, filter=True)
-            annotations = get_annotations(edf_file_path)
-            annotation_dict = get_window_dict(raw, annotations)
+        if filename.endswith(".edf"):
+            print(filename)            
+            # raw = get_raw(edf_file_path, filter=True)
+            # annotations = get_annotations(edf_file_path)
+            # annotation_dict = get_window_dict(raw, annotations)
 
-            cov = get_cov(raw)
-            compute_inverse = make_fast_inverse_operator(raw.info, fwd, cov, snr=snr)
+            # cov = get_cov(raw)
+            # compute_inverse = make_fast_inverse_operator(raw.info, fwd, cov, snr=snr)
 
-            activity = calculate_activity_per_label(annotation_dict, labels, compute_inverse)
-            dataset_activity[dirpath.split('/')[-1]][filename[:-4]] = activity
+            # activity = calculate_activity_per_label(annotation_dict, labels, compute_inverse)
+            # dataset_activity[dirpath.split('/')[-1]][filename[:-4]] = activity
 
-            pbar.update(1)
-            pbar.set_description(filename[:-4])
+            # pbar.update(1)
+            # pbar.set_description(filename[:-4])
 
 pbar.close()
 
