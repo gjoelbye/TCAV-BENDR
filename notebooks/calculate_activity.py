@@ -1,21 +1,18 @@
 import os
 if os.getcwd().split("/")[-1] != 'BENDR-XAI': os.chdir("../")
+from collections import defaultdict
 
 import mne
 import numpy as np
-import matplotlib.pyplot as plt
 from utils import *
 
-from matplotlib import animation
-import matplotlib.cm as cm
-import sys
 from tqdm import tqdm
 from pathlib import Path
 
 subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
 
 edf_file_path = 'notebooks/S001R03.edf' 
-mmidb_path = Path(r"/mnt/c/Users/anders/OneDriveDTU/Dokumenter/BENDR-XAI/data/eegmmidb/files")
+mmidb_path = Path(r"data/eegmmidb/files")
 parcellation_name = "aparc.a2009s"
 snr = 1.0
 
@@ -58,5 +55,6 @@ for (dirpath, _, filenames) in os.walk(mmidb_path):
             # pbar.set_description(filename[:-4])
 
 pbar.close()
+dataset_activity = dict(dataset_activity)
 
 np.save("mmidb_{}_{}".format(parcellation_name, str(round(snr, 1))), dataset_activity)
