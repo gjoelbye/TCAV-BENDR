@@ -1,4 +1,5 @@
 import os
+from collections import defaultdict
 if os.getcwd().split("/")[-1] != 'BENDR-XAI': os.chdir("../")
 
 import mne
