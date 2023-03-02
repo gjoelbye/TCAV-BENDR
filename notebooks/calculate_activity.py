@@ -15,12 +15,12 @@ from pathlib import Path
 
 subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
 
-edf_file_path = 'notebooks/S001R03.edf' 
-mmidb_path = Path(r"/mnt/c/Users/anders/OneDriveDTU/Dokumenter/BENDR-XAI/data/eegmmidb/files")
+random_edf_file_path = 'notebooks/S001R03.edf' 
+mmidb_path = Path(r"/home/s194260/BENDR-XAI/data/eegmmidb/files")
 parcellation_name = "aparc.a2009s"
 snr = 1.0
 
-info = get_raw(edf_file_path, filter=True).info # Just need one raw to get info
+info = get_raw(random_edf_file_path, filter=True).info # Just need one raw to get info
 src = get_src(src_path)
 fwd = get_fwd(info, trans, src_path, bem_path)
 
@@ -33,7 +33,7 @@ def calculate_activity_per_label(annotation_dict, labels, compute_inverse):
         activity[anno] = np.empty((len(annotation_dict[anno]), sum(len(hemi) for hemi in labels)))
         for i, window in enumerate(annotation_dict[anno]):
             stc = compute_inverse(window)
-            activity[anno][i] = np.concatenate(get_power_per_label(stc, labels, standardize=True))
+            activity[anno][i] = np.concatenate(get_power_per_label(stc, labels, standardize=False))
 
     return activity
 
@@ -43,9 +43,10 @@ pbar = tqdm()
 
 for (dirpath, _, filenames) in os.walk(mmidb_path):
     for filename in filenames:
-        if filename.endswith(".edf"):            
-            raw = get_raw(filename, filter=True)
-            annotations = get_annotations(filename)
+        if filename.endswith(".edf"):
+            filepath = Path(dirpath) / filename       
+            raw = get_raw(filepath, filter=True)
+            annotations = get_annotations(filepath)
             annotation_dict = get_window_dict(raw, annotations)
 
             cov = get_cov(raw)
@@ -59,4 +60,6 @@ for (dirpath, _, filenames) in os.walk(mmidb_path):
 
 pbar.close()
 
-np.save("mmidb_{}_{}".format(parcellation_name, str(round(snr, 1))), dataset_activity)
+dataset_activity = dict(dataset_activity)
+
+np.save("mmidb_{}_{}".format(parcellation_name, str(round(snr, 1))), dataset_activity, allow_pickle=True)

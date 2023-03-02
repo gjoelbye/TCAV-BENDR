@@ -8,7 +8,21 @@ import vtk
 from vtk import vtkPolyData, vtkDecimatePro
 from vtk.util.numpy_support import vtk_to_numpy
 
-def get_raw(edf_file_path, filter = True):
+from typing import Dict, List, Tuple, Union
+
+def get_raw(edf_file_path: Path, filter: bool = True) -> mne.io.Raw:
+    """Reads an edf file and returns a raw object.
+    Parameters
+    ----------
+    edf_file_path : str
+        Path to the edf file.
+    filter : bool
+        Whether to filter the data or not.
+    Returns
+    -------
+    raw : mne.io.Raw
+        The raw object.
+    """
     raw = mne.io.read_raw_edf(edf_file_path, verbose=False, preload=True)
     mne.datasets.eegbci.standardize(raw)  # Set channel names
     montage = mne.channels.make_standard_montage('standard_1020')
@@ -17,17 +31,46 @@ def get_raw(edf_file_path, filter = True):
     raw = raw.set_montage(montage); # Set montage
 
     if filter:
+        raw = raw.resample(256)
         raw = raw.filter(0.5, 70, verbose = False)
         raw = raw.notch_filter(60, verbose = False)
 
     return raw
 
-def get_annotations(edf_file_path):
+def get_annotations(edf_file_path: str) -> mne.Annotations:
+    """Reads an edf file and returns the annotations.
+    Parameters
+    ----------
+    edf_file_path : str
+        Path to the edf file.
+    Returns
+    -------
+    annotations : mne.Annotations
+        The annotations.
+    """
     annotations = mne.read_annotations(edf_file_path)
 
     return annotations
 
 def get_fsaverage(verbose = False):
+    """Returns the fsaverage files.
+    Parameters
+    ----------
+    verbose : bool
+        Whether to print the progress or not.
+    Returns
+    ----------
+    subjects_dir : str
+        The subjects directory.
+    subject : str
+        The subject.
+    trans : str
+        The transformation.
+    src_path : str
+        The source path.
+    bem_path : str
+        The bem path.
+    """
     # Download fsaverage files
     fs_dir = Path(fetch_fsaverage(verbose=False))
     subjects_dir = os.path.dirname(fs_dir)
@@ -51,7 +94,7 @@ def get_fwd(info, trans, src_path, bem_path):
     return fwd
 
 
-def get_cov(raw):
+def get_cov(raw: mne.io.Raw) -> mne.Covariance:
     cov = mne.compute_raw_covariance(raw, verbose=False)
     return cov
 
@@ -64,7 +107,35 @@ def make_fast_inverse_operator(info, fwd, cov, method="eLORETA", snr=3, nave=1, 
     func = lambda x: mne.minimum_norm.apply_inverse_raw(x, inv, lambda2, method=method, nave=nave, prepared=True, verbose=verbose)
     return func
 
-def get_stc(raw, fwd, cov, tmin=None, tmax=None, snr = 3, method="eLORETA", nave = 1, verbose = False):
+def get_stc(raw: mne.io.Raw, fwd: mne.forward.Forward, cov: mne.Covariance,
+            tmin: float = None, tmax: float = None, snr: float = 3, method: str = "eLORETA",
+            nave: int = 1, verbose: bool = False) -> mne.SourceEstimate:
+    """Returns the source estimate.
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        The raw object.
+    fwd : mne.forward.forward.Forward
+        The forward solution.
+    cov : mne.cov.Covariance
+        The covariance matrix.
+    tmin : float
+        The start time.
+    tmax : float
+        The end time.
+    snr : float
+        The signal to noise ratio.
+    method : str
+        The method to use.
+    nave : int
+        The number of averages.
+    verbose : bool
+        Whether to print the progress or not.
+    Returns
+    ----------
+    stc : mne.SourceEstimate
+        The source estimate.
+    """
 
     if tmin is not None:
         idx_start = int(tmin * raw.info['sfreq'])
@@ -85,7 +156,7 @@ def get_stc(raw, fwd, cov, tmin=None, tmax=None, snr = 3, method="eLORETA", nave
 
     return stc
 
-def get_labels(subjects_dir, parcellation_name = "aparc_sub", verbose = False):
+def get_labels(subjects_dir, parcellation_name: str = "aparc_sub", verbose: bool = False) -> List[List[mne.Label]]:
     mne.datasets.fetch_hcp_mmp_parcellation(subjects_dir=subjects_dir, accept=True)
 
     labels_lh = mne.read_labels_from_annot('fsaverage', parcellation_name, 'lh', subjects_dir=subjects_dir, verbose=verbose) 
@@ -253,7 +324,8 @@ def vertex_values_to_tris_values(values, tris, func=np.mean):
 
 
 def get_window(raw, annotation):
-    window = raw.copy().crop(tmin=annotation['onset'], tmax=annotation['onset']+annotation['duration'])
+    window = raw.copy().crop(tmin=annotation['onset'],
+                             tmax=min(raw.times[-1], annotation['onset']+annotation['duration']))
     
     return window
 
