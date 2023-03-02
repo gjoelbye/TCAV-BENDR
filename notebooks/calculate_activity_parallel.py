@@ -13,6 +13,18 @@ import sys
 from tqdm import tqdm
 from pathlib import Path
 import multiprocessing
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--high_pass", type=float, default=0.5)
+parser.add_argument("--low_pass", type=float, default=70.0)
+args = parser.parse_args()
+
+low_pass = args.low_pass
+high_pass = args.high_pass
+
+print("High pass", high_pass)
+print("Low pass", low_pass)
 
 subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
 
@@ -39,7 +51,7 @@ def calculate_activity_per_label(annotation_dict, labels, compute_inverse):
     return activity
 
 def process_file(filepath):
-    raw = get_raw(filepath, filter=True)
+    raw = get_raw(filepath, filter=True, high_pass=high_pass, low_pass=low_pass, notch=None)
     annotations = get_annotations(filepath)
     annotation_dict = get_window_dict(raw, annotations)
 
@@ -74,4 +86,5 @@ for result in results:
 
 dataset_activity = dict(dataset_activity)
 
-np.save("mmidb_{}_{}_parallel".format(parcellation_name, str(round(snr, 1))), dataset_activity, allow_pickle=True)
+np.save("mmidb_{}_{}_{}_{}_parallel".format(parcellation_name, str(round(snr, 1)),
+        str(round(high_pass, 1)), str(round(low_pass, 1))), dataset_activity, allow_pickle=True)

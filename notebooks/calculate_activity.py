@@ -45,7 +45,7 @@ for (dirpath, _, filenames) in os.walk(mmidb_path):
     for filename in filenames:
         if filename.endswith(".edf"):
             filepath = Path(dirpath) / filename       
-            raw = get_raw(filepath, filter=True)
+            raw = get_raw(filepath, filter=True, resample=160)
             annotations = get_annotations(filepath)
             annotation_dict = get_window_dict(raw, annotations)
 
@@ -62,4 +62,4 @@ pbar.close()
 
 dataset_activity = dict(dataset_activity)
 
-np.save("mmidb_{}_{}".format(parcellation_name, str(round(snr, 1))), dataset_activity, allow_pickle=True)
+np.save("mmidb_{}_{}_new".format(parcellation_name, str(round(snr, 1))), dataset_activity, allow_pickle=True)

@@ -10,7 +10,8 @@ from vtk.util.numpy_support import vtk_to_numpy
 
 from typing import Dict, List, Tuple, Union
 
-def get_raw(edf_file_path: Path, filter: bool = True) -> mne.io.Raw:
+def get_raw(edf_file_path: Path, filter: bool = True,
+            high_pass = 0.5, low_pass = 70, notch = 60, resample = 256) -> mne.io.Raw:
     """Reads an edf file and returns a raw object.
     Parameters
     ----------
@@ -31,9 +32,12 @@ def get_raw(edf_file_path: Path, filter: bool = True) -> mne.io.Raw:
     raw = raw.set_montage(montage); # Set montage
 
     if filter:
-        raw = raw.resample(256)
-        raw = raw.filter(0.5, 70, verbose = False)
-        raw = raw.notch_filter(60, verbose = False)
+        if resample:
+            raw = raw.resample(resample)
+        if low_pass and high_pass:
+            raw = raw.filter(high_pass, low_pass, verbose = False)
+        if notch:
+            raw = raw.notch_filter(notch, verbose = False)
 
     return raw
 
