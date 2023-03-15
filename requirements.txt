@@ -18,5 +18,5 @@ mne
 tqdm
 
 pyvistaqt
-
+torch
 

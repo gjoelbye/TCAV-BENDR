@@ -1,4 +1,5 @@
 # Enviromental requirements
+setuptools
 cookiecutter
 flake8
 coverage

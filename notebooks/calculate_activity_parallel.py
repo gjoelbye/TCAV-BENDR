@@ -29,8 +29,8 @@ print("Low pass", low_pass)
 subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
 
 random_edf_file_path = 'notebooks/S001R03.edf' 
-mmidb_path = Path(r"/home/s194260/BENDR-XAI/data/eegmmidb/files")
-parcellation_name = "aparc.a2009s"
+mmidb_path = Path(r"/work1/s194260/eegmmidb/files")
+parcellation_name = "HCPMMP1_combined"
 snr = 1.0
 
 info = get_raw(random_edf_file_path, filter=True).info # Just need one raw to get info
