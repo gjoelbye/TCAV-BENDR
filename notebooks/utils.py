@@ -26,7 +26,13 @@ def get_raw(edf_file_path: Path, filter: bool = True,
     """
     raw = mne.io.read_raw_edf(edf_file_path, verbose=False, preload=True)
     mne.datasets.eegbci.standardize(raw)  # Set channel names
-    montage = mne.channels.make_standard_montage('standard_1020')
+    montage = mne.channels.make_standard_montage('standard_1005')
+
+    new_names = dict(
+        (ch_name,
+        ch_name.rstrip('.').upper().replace('Z', 'z').replace('FP', 'Fp'))
+        for ch_name in raw.ch_names)
+    raw.rename_channels(new_names)
     
     raw = raw.set_eeg_reference(ref_channels='average', projection=True, verbose = False)
     raw = raw.set_montage(montage); # Set montage
@@ -90,7 +96,7 @@ def get_fsaverage(verbose = False):
 
 def get_fwd(info, trans, src_path, bem_path):
     fwd = mne.make_forward_solution(info, trans=trans, src=src_path, bem=bem_path,
-                                     meg=False, eeg=True, verbose=False, n_jobs=4)
+                                     meg=False, eeg=True, verbose=False, mindist=5.0, n_jobs=4)
 
     #fwd = mne.convert_forward_solution(fwd, force_fixed=True, verbose=False)
     # leadfield = fwd['sol']['data']
