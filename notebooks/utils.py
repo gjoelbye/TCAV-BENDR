@@ -109,12 +109,12 @@ def get_cov(raw: mne.io.Raw) -> mne.Covariance:
     return cov
 
 
-def make_fast_inverse_operator(info, fwd, cov, method="eLORETA", snr=3, nave=1, verbose=False):
+def make_fast_inverse_operator(info, fwd, cov, method="eLORETA", snr=3, nave=1, max_iter=100, verbose=False):
     lambda2 = 1/snr**2
     inv = mne.minimum_norm.make_inverse_operator(info, fwd, cov, verbose=verbose)
-    inv = mne.minimum_norm.prepare_inverse_operator(inv, nave, lambda2, method=method, verbose=verbose)
+    inv = mne.minimum_norm.prepare_inverse_operator(inv, nave, lambda2, method=method, method_params={'max_iter': max_iter}, verbose=verbose)
     
-    func = lambda x: mne.minimum_norm.apply_inverse_raw(x, inv, lambda2, method=method, nave=nave, prepared=True, verbose=verbose)
+    func = lambda x: mne.minimum_norm.apply_inverse_raw(x, inv, lambda2, method=method, nave=nave, prepared=True, method_params={'max_iter': max_iter}, verbose=verbose)
     return func
 
 def get_stc(raw: mne.io.Raw, fwd: mne.forward.Forward, cov: mne.Covariance,
