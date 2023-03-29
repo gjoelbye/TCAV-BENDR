@@ -26,7 +26,13 @@ def get_raw(edf_file_path: Path, filter: bool = True,
     """
     raw = mne.io.read_raw_edf(edf_file_path, verbose=False, preload=True)
     mne.datasets.eegbci.standardize(raw)  # Set channel names
-    montage = mne.channels.make_standard_montage('standard_1020')
+    montage = mne.channels.make_standard_montage('standard_1005')
+
+    new_names = dict(
+        (ch_name,
+        ch_name.rstrip('.').upper().replace('Z', 'z').replace('FP', 'Fp'))
+        for ch_name in raw.ch_names)
+    raw.rename_channels(new_names)
     
     raw = raw.set_eeg_reference(ref_channels='average', projection=True, verbose = False)
     raw = raw.set_montage(montage); # Set montage
@@ -90,7 +96,7 @@ def get_fsaverage(verbose = False):
 
 def get_fwd(info, trans, src_path, bem_path):
     fwd = mne.make_forward_solution(info, trans=trans, src=src_path, bem=bem_path,
-                                     meg=False, eeg=True, verbose=False, n_jobs=4)
+                                     meg=False, eeg=True, verbose=False, mindist=5.0, n_jobs=4)
 
     #fwd = mne.convert_forward_solution(fwd, force_fixed=True, verbose=False)
     # leadfield = fwd['sol']['data']
@@ -103,12 +109,12 @@ def get_cov(raw: mne.io.Raw) -> mne.Covariance:
     return cov
 
 
-def make_fast_inverse_operator(info, fwd, cov, method="eLORETA", snr=3, nave=1, verbose=False):
+def make_fast_inverse_operator(info, fwd, cov, method="eLORETA", snr=3, nave=1, max_iter=100, verbose=False):
     lambda2 = 1/snr**2
     inv = mne.minimum_norm.make_inverse_operator(info, fwd, cov, verbose=verbose)
-    inv = mne.minimum_norm.prepare_inverse_operator(inv, nave, lambda2, method=method, verbose=verbose)
+    inv = mne.minimum_norm.prepare_inverse_operator(inv, nave, lambda2, method=method, method_params={'max_iter': max_iter}, verbose=verbose)
     
-    func = lambda x: mne.minimum_norm.apply_inverse_raw(x, inv, lambda2, method=method, nave=nave, prepared=True, verbose=verbose)
+    func = lambda x: mne.minimum_norm.apply_inverse_raw(x, inv, lambda2, method=method, nave=nave, prepared=True, method_params={'max_iter': max_iter}, verbose=verbose)
     return func
 
 def get_stc(raw: mne.io.Raw, fwd: mne.forward.Forward, cov: mne.Covariance,
