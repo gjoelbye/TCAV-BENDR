@@ -340,14 +340,20 @@ def get_window(raw, annotation):
     return window
 
 def get_window_dict(raw, annotations):
+
     window_dict = {}
 
-    for description in np.unique(annotations.description):
+    if raw.get_data().shape[1] >= 15360:
+        raw_chops = get_raw_chops(raw)
+        window_dict['T0'] = raw_chops
 
-        list_of_windows = []
-        for annotation in annotations[annotations.description==description]:
-            list_of_windows.append(get_window(raw, annotation))
+    else:
+        for description in np.unique(annotations.description):
 
-        window_dict[description] = list_of_windows
+            list_of_windows = []
+            for annotation in annotations[annotations.description==description]:
+                list_of_windows.append(get_window(raw, annotation))
+
+            window_dict[description] = list_of_windows
 
     return window_dict
