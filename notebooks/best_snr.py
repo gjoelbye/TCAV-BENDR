@@ -29,8 +29,8 @@ print("Low pass", low_pass)
 subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
 
 random_edf_file_path = 'notebooks/S001R03.edf' 
-#mmidb_path = r"/work1/s194260/eegmmidb/files"
-mmidb_path = r"data/eegmmidb/files"
+mmidb_path = r"/work1/s194260/eegmmidb/files"
+#mmidb_path = r"data/eegmmidb/files"
 parcellation_name = "aparc.a2009s"
 
 info = get_raw(random_edf_file_path, filter=True).info # Just need one raw to get info
@@ -54,11 +54,11 @@ def calculate_activity_per_label(annotation_dict, labels, compute_inverse):
 def process_file(patient):
     raw_open = get_raw(mmidb_path + f'/{patient}/{patient}R01.edf', filter=True, resample=False, high_pass=8, low_pass=12)
     annotation_open = get_annotations(mmidb_path + f'/{patient}/{patient}R01.edf')
-    raw_open = get_window_dict(raw_open, annotation_open)['T0'][0]
+    raw_open = mne.concatenate_raws([eeg for anno in get_window_dict(raw_open, annotation_open).values() for eeg in anno])
 
     raw_closed = get_raw(mmidb_path + f'/{patient}/{patient}R02.edf', filter=True, resample=False, high_pass=8, low_pass=12)
     annotation_closed = get_annotations(mmidb_path + f'/{patient}/{patient}R02.edf')
-    raw_closed = get_window_dict(raw_closed, annotation_closed)['T0'][0]
+    raw_closed = mne.concatenate_raws([eeg for anno in get_window_dict(raw_closed, annotation_closed).values() for eeg in anno])
 
     cov_open = get_cov(raw_open)
     cov_closed = get_cov(raw_closed)
