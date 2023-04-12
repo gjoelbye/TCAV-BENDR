@@ -361,7 +361,8 @@ def get_window_dict(raw, annotations):
 
             list_of_windows = []
             for annotation in annotations[annotations.description==description]:
-                list_of_windows.append(get_window(raw, annotation))
+                window = get_window(raw, annotation)
+                list_of_windows.append(window)
 
             window_dict[description] = list_of_windows
 
