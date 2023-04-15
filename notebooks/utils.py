@@ -344,7 +344,10 @@ def get_raw_chops(raw, WINDOW_SIZE=4):
     raw_chops = []
 
     for i in range(NUMBER_CHOPS):
-        raw_chops.append(raw.copy().crop(i*WINDOW_SIZE, (i+1)*WINDOW_SIZE))
+        try:
+            raw_chops.append(raw.copy().crop(i*WINDOW_SIZE, (i+1)*WINDOW_SIZE))
+        except:
+            pass
         
     return raw_chops
 

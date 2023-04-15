@@ -11,7 +11,7 @@ for high, low in zip([1.0, 4.0, 8.0, 12.0, 30.0], [4.0, 8.0, 12.0, 30.0, 70.0]):
 #BSUB -n 30
 #BSUB -R "rusage[mem=10G]"
 #BSUB -R "span[hosts=1]"
-#BSUB -W 12:00
+#BSUB -W 2:00
 #BSUB -o logs/output_{name}_%J.out 
 #BSUB -e logs/error_{name}_%J.err 
 module load scipy/1.9.1-python-3.10.7
