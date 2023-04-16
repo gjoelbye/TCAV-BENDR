@@ -47,7 +47,7 @@ def get_raw(edf_file_path: Path, filter: bool = True,
 
     return raw
 
-def get_annotations(edf_file_path: str) -> mne.Annotations:
+def get_annotations(edf_file_path: str, window_length = None) -> mne.Annotations:
     """Reads an edf file and returns the annotations.
     Parameters
     ----------
@@ -59,6 +59,25 @@ def get_annotations(edf_file_path: str) -> mne.Annotations:
         The annotations.
     """
     annotations = mne.read_annotations(edf_file_path)
+    
+    if isinstance(window_length, (int, float)):
+        window_length = 4.0
+
+        new_onset = []
+        new_duration = []
+        new_description = []
+
+        for i in range(len(annotations)):  
+            for j in range(int(annotations.duration[i] // window_length)):
+                new_onset.append(annotations.onset[i] + j * window_length)
+                new_duration.append(window_length)
+                new_description.append(annotations.description[i])
+                
+        new_onset = np.array(new_onset, dtype=np.float64)
+        new_duration = np.array(new_duration, dtype=np.float64)
+        new_description = np.array(new_description, dtype='<U2')
+
+        annotations = mne.Annotations(onset=new_onset, duration=new_duration, description=new_description)
 
     return annotations
 
