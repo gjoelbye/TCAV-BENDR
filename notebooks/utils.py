@@ -378,23 +378,6 @@ def get_window(raw, annotation):
     
     return window
 
-def get_raw_chops(raw, WINDOW_SIZE=4):
-    NUMBER_CHOPS = int(60 / WINDOW_SIZE)
-    raw_chops = []
-
-    for i in range(NUMBER_CHOPS):
-        try:
-            raw_chops.append(raw.copy().crop(i*WINDOW_SIZE, (i+1)*WINDOW_SIZE))
-        except:
-            pass
-        
-    return raw_chops
-
-def get_windows_dict_baseline(raw):
-    raw_chops = get_raw_chops(raw)
-    
-    return {'T0': raw_chops}
-
 def get_window_dict(raw, annotations):
 
     window_dict = {}
