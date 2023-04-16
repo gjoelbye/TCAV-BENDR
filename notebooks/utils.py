@@ -47,7 +47,29 @@ def get_raw(edf_file_path: Path, filter: bool = True,
 
     return raw
 
-def get_annotations(edf_file_path: str, window_length = None) -> mne.Annotations:
+
+def pick_and_rename_channels(raw):
+    mne.channels.rename_channels(raw.info, {'Fp1': 'FP1', 'Fp2': 'FP2', 'Fz': 'FZ', 'Cz': 'CZ', 'Pz': 'PZ'})
+
+    if 'P7' in raw.ch_names:
+        raw.rename_channels({'P7': 'T5'})
+    if 'P8' in raw.ch_names:
+        raw.rename_channels({'P8': 'T6'})
+
+    EEG_20_div = [
+                'FP1', 'FP2',
+        'F7', 'F3', 'FZ', 'F4', 'F8',
+        'T7', 'C3', 'CZ', 'C4', 'T8',
+        'T5', 'P3', 'PZ', 'P4', 'T6',
+                 'O1', 'O2'
+    ]
+    
+    raw.pick_channels(ch_names=EEG_20_div)
+    raw.reorder_channels(EEG_20_div)
+
+    return raw
+
+def get_annotations(edf_file_path: str) -> mne.Annotations:
     """Reads an edf file and returns the annotations.
     Parameters
     ----------
@@ -389,3 +411,37 @@ def get_window_dict(raw, annotations):
         window_dict[description] = list_of_windows
 
     return window_dict
+
+
+
+### LOAD DATA ###
+
+def load_mmidb_data_dict(DATA_PATH, PARCELLATION, SNR, chop=True):
+
+    def sort_dict(dict):
+        return {k: dict[k] for k in sorted(dict.keys())}
+
+    PARCELLATION_PATH = DATA_PATH + 'mmidb_' + PARCELLATION + '/mmidb_'+ PARCELLATION
+
+    if chop:
+        delta_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_1.0_4.0_chop_parallel.npy', allow_pickle=True).item()
+        theta_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_4.0_8.0_chop_parallel.npy', allow_pickle=True).item()
+        alpha_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_8.0_12.0_chop_parallel.npy', allow_pickle=True).item()
+        beta_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_12.0_30.0_chop_parallel.npy', allow_pickle=True).item()
+        gamma_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_30.0_70.0_chop_parallel.npy', allow_pickle=True).item()
+    else:
+        delta_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_1.0_4.0_parallel.npy', allow_pickle=True).item()
+        theta_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_4.0_8.0_parallel.npy', allow_pickle=True).item()
+        alpha_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_8.0_12.0_parallel.npy', allow_pickle=True).item()
+        beta_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_12.0_30.0_parallel.npy', allow_pickle=True).item()
+        gamma_activity = np.load(PARCELLATION_PATH + '_' + str(SNR) + '_30.0_70.0_parallel.npy', allow_pickle=True).item()
+
+    data_dict = {
+        'Delta': sort_dict(delta_activity),
+        'Theta': sort_dict(theta_activity),
+        'Alpha': sort_dict(alpha_activity),
+        'Beta': sort_dict(beta_activity),
+        'Gamma': sort_dict(gamma_activity)
+    }
+
+    return data_dict
