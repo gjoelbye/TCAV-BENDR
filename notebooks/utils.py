@@ -69,7 +69,7 @@ def pick_and_rename_channels(raw):
 
     return raw
 
-def get_annotations(edf_file_path: str) -> mne.Annotations:
+def get_annotations(edf_file_path: str, window_length = None) -> mne.Annotations:
     """Reads an edf file and returns the annotations.
     Parameters
     ----------
@@ -83,8 +83,6 @@ def get_annotations(edf_file_path: str) -> mne.Annotations:
     annotations = mne.read_annotations(edf_file_path)
     
     if isinstance(window_length, (int, float)):
-        window_length = 4.0
-
         new_onset = []
         new_duration = []
         new_description = []
