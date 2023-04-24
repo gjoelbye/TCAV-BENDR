@@ -49,6 +49,7 @@ def get_raw(edf_file_path: Path, filter: bool = True,
 
 
 def pick_and_rename_MMIDB_channels(raw):
+    raw = raw.copy()
     mne.channels.rename_channels(raw.info, {'Fp1': 'FP1', 'Fp2': 'FP2', 'Fz': 'FZ', 'Cz': 'CZ', 'Pz': 'PZ'})
 
     
@@ -415,7 +416,7 @@ def get_window_dict(raw, annotations):
 
 ### LOAD DATA ###
 
-def load_mmidb_data_dict(DATA_PATH, PARCELLATION, SNR, chop=True):
+def load_mmidb_data_dict(DATA_PATH, PARCELLATION, SNR=100, chop=True):
 
     def sort_dict(dict):
         return {k: dict[k] for k in sorted(dict.keys())}
