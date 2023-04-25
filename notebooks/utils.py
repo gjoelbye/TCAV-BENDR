@@ -26,7 +26,7 @@ def get_raw(edf_file_path: Path, filter: bool = True,
     """
     raw = mne.io.read_raw_edf(edf_file_path, verbose=False, preload=True)
     mne.datasets.eegbci.standardize(raw)  # Set channel names
-    montage = mne.channels.make_standard_montage('standard_1005')
+    montage = mne.channels.make_standard_montage('standard_1020')
 
     new_names = dict(
         (ch_name,
@@ -48,9 +48,11 @@ def get_raw(edf_file_path: Path, filter: bool = True,
     return raw
 
 
-def pick_and_rename_channels(raw):
+def pick_and_rename_MMIDB_channels(raw):
+    raw = raw.copy()
     mne.channels.rename_channels(raw.info, {'Fp1': 'FP1', 'Fp2': 'FP2', 'Fz': 'FZ', 'Cz': 'CZ', 'Pz': 'PZ'})
 
+    
     if 'P7' in raw.ch_names:
         raw.rename_channels({'P7': 'T5'})
     if 'P8' in raw.ch_names:
@@ -397,7 +399,7 @@ def get_window_dict(raw, annotations):
 
 ### LOAD DATA ###
 
-def load_mmidb_data_dict(DATA_PATH, PARCELLATION, SNR, chop=True):
+def load_mmidb_data_dict(DATA_PATH, PARCELLATION, SNR=100, chop=True):
 
     def sort_dict(dict):
         return {k: dict[k] for k in sorted(dict.keys())}

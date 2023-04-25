@@ -30,7 +30,7 @@ subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
 
 random_edf_file_path = 'notebooks/S001R03.edf' 
 mmidb_path = Path(r"/work1/s194260/eegmmidb/files")
-parcellation_name = "aparc.a2009s"
+parcellation_name = "HCPMMP1_combined"
 snr = 100.0
 
 info = get_raw(random_edf_file_path, filter=True).info # Just need one raw to get info
@@ -53,7 +53,7 @@ def calculate_activity_per_label(annotation_dict, labels, compute_inverse):
 
 def process_file(filepath):
     raw = get_raw(filepath, filter=True, high_pass=high_pass, low_pass=low_pass, notch=None)
-    annotations = get_annotations(filepath)
+    annotations = get_annotations(filepath, window_length = 4.0)
     annotation_dict = get_window_dict(raw, annotations)
 
     cov = get_cov(raw)
