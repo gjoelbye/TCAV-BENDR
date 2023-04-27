@@ -31,7 +31,7 @@ subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
 random_edf_file_path = 'notebooks/S001R03.edf' 
 mmidb_path = Path(r"/work1/s194260/eegmmidb/files")
 parcellation_name = "HCPMMP1_combined"
-snr = 1.0
+snr = 100.0
 
 info = get_raw(random_edf_file_path, filter=True).info # Just need one raw to get info
 src = get_src(src_path)
@@ -43,16 +43,17 @@ def calculate_activity_per_label(annotation_dict, labels, compute_inverse):
     activity = {}
 
     for anno in annotation_dict.keys():
-        activity[anno] = np.empty((len(annotation_dict[anno]), sum(len(hemi) for hemi in labels)))
-        for i, window in enumerate(annotation_dict[anno]):
-            stc = compute_inverse(window)
-            activity[anno][i] = np.concatenate(get_power_per_label(stc, labels, standardize=False))
+        if anno == 'T0':
+            activity[anno] = np.empty((len(annotation_dict[anno]), sum(len(hemi) for hemi in labels)))
+            for i, window in enumerate(annotation_dict[anno]):
+                stc = compute_inverse(window)
+                activity[anno][i] = np.concatenate(get_power_per_label(stc, labels, standardize=False))
 
     return activity
 
 def process_file(filepath):
     raw = get_raw(filepath, filter=True, high_pass=high_pass, low_pass=low_pass, notch=None)
-    annotations = get_annotations(filepath)
+    annotations = get_annotations(filepath, window_length = 4.0)
     annotation_dict = get_window_dict(raw, annotations)
 
     cov = get_cov(raw)
@@ -86,5 +87,5 @@ for result in results:
 
 dataset_activity = dict(dataset_activity)
 
-np.save("mmidb_{}_{}_{}_{}_parallel".format(parcellation_name, str(round(snr, 1)),
+np.save("mmidb_{}_{}_{}_{}_chop_parallel".format(parcellation_name, str(round(snr, 1)),
         str(round(high_pass, 1)), str(round(low_pass, 1))), dataset_activity, allow_pickle=True)
