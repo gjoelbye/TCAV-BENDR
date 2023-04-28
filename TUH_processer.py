@@ -189,8 +189,6 @@ if __name__ == "__main__":
     # Get EDF file paths    
     edf_files = [edf_dir / file for file in os.listdir(edf_dir)]
     
-    edf_files = edf_files[0:1]
-    
     tqdm.write(f"[INFO] Found {len(edf_files)} EDF files")
     
     # Get forward model
