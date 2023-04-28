@@ -383,17 +383,21 @@ def get_window(raw, annotation):
 def get_window_dict(raw, annotations):
 
     window_dict = {}
+    annotation_dict = {}
+    
 
     for description in np.unique(annotations.description):
-
         list_of_windows = []
+        list_of_annotations = []
         for annotation in annotations[annotations.description==description]:
             window = get_window(raw, annotation)
             list_of_windows.append(window)
+            list_of_annotations.append(annotation)
 
         window_dict[description] = list_of_windows
+        annotation_dict[description] = list_of_annotations
 
-    return window_dict
+    return window_dict, annotation_dict
 
 
 
