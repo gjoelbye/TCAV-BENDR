@@ -3814,3 +3814,9 @@
 /nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/096/aaaaaogc/s001_2012_10_29/01_tcp_ar/aaaaaogc_s001_t000.edf
 /nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/142/aaaaavbr/s005_2016_04_16/01_tcp_ar/aaaaavbr_s005_t001.edf
 /nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/118/aaaaarpr/s005_2014_08_28/01_tcp_ar/aaaaarpr_s005_t001.edf
+/nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/128/aaaaatbc/s007_2015_06_19/01_tcp_ar/aaaaatbc_s007_t003.edf
+/nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/092/aaaaantp/s005_2012_10_18/01_tcp_ar/aaaaantp_s005_t008.edf
+/nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/149/aaaaawdl/s005_2016_02_11/01_tcp_ar/aaaaawdl_s005_t010.edf
+/nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/119/aaaaarpv/s001_2014_06_07/01_tcp_ar/aaaaarpv_s001_t004.edf
+/nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/043/aaaaagmn/s004_2017_01_07/01_tcp_ar/aaaaagmn_s004_t006.edf
+/nobackup/tsal-tmp/tuh_eeg/v2.0.0/edf/131/aaaaatjx/s001_2015_10_02/03_tcp_ar_a/aaaaatjx_s001_t004.edf
