@@ -11,57 +11,6 @@ from notebooks.utils import *
 from functools import partial
 import multiprocessing
 
-def read_TUH_edf(file_path, high_pass=0.1, low_pass=100.0, notch=60.0):
-    # Read the EDF file
-    raw = mne.io.read_raw_edf(file_path, preload=True, verbose=False)
-
-    # Define the channel map to match 10-20 system channel names
-    channel_map = {
-        'EEG C3-REF': 'C3', 'EEG P4-REF': 'P4', 'EEG T5-REF': 'P7', 'EEG F8-REF': 'F8', 'EEG F7-REF': 'F7',
-        'EEG C4-REF': 'C4', 'EEG PZ-REF': 'Pz', 'EEG FP2-REF': 'Fp2', 'EEG F4-REF': 'F4', 'EEG F3-REF': 'F3',
-        'EEG T6-REF': 'P8', 'EEG CZ-REF': 'Cz', 'EEG O2-REF': 'O2', 'EEG O1-REF': 'O1', 'EEG T2-REF': 'FT8',
-        'EEG T1-REF': 'FT7', 'EEG T4-REF': 'T8', 'EEG P3-REF': 'P3', 'EEG FZ-REF': 'Fz', 'EEG T3-REF': 'T7',
-        'EEG FP1-REF': 'Fp1', 'EEG C4-LE': 'C4', 'EEG P3-LE': 'P3', 'EEG FZ-LE': 'Fz', 'EEG F3-LE': 'F3',
-        'EEG FP1-LE': 'Fp1', 'EEG T6-LE': 'P8', 'EEG CZ-LE': 'Cz', 'EEG F8-LE': 'F8', 'EEG O1-LE': 'O1',
-        'EEG PZ-LE': 'Pz', 'EEG C3-LE': 'C3', 'EEG FP2-LE': 'Fp2', 'EEG O2-LE': 'O2', 'EEG FP1-LE': 'Fp1',
-        'EEG F7-LE': 'F7', 'EEG T1-LE': 'FT7', 'EEG T2-LE': 'FT8', 'EEG P4-LE': 'P4', 'EEG T4-LE': 'T8',
-    }
-
-    # Filter the channel_map to include only the channels present in the raw data
-    channel_map_sub = {k: v for k, v in channel_map.items() if k in raw.ch_names}
-    
-    # Standardize the raw data
-    mne.datasets.eegbci.standardize(raw)
-
-    # Rename the channels using the filtered channel_map
-    raw = raw.rename_channels(channel_map_sub)
-
-    # Create the standard 10-20 montage
-    montage = mne.channels.make_standard_montage('standard_1020')
-
-    # Set the montage for the raw data, ignoring missing channels
-    raw = raw.set_montage(montage, on_missing='ignore', verbose=False)
-    
-    # Pick only channels present in the filtered channel_map
-    raw = raw.pick_channels(list(channel_map_sub.values()))
-
-    # Set the average reference for the raw data
-    raw = raw.set_eeg_reference(ref_channels='average', projection=True, verbose=False)
-
-    # Apply the average reference projection
-    raw.apply_proj(verbose=False)
-
-    # Resample the raw data to 256 Hz
-    raw = raw.resample(256)
-    
-    # Filter the data
-    raw = raw.filter(high_pass, low_pass, fir_design='firwin', verbose=False)
-    
-    # Notch filter at 60 Hz
-    raw = raw.notch_filter(notch, fir_design='firwin', verbose=False)
-    
-    return raw
-
 def process_annotations(window_dict, labels, fwd, compute_inverse):
     # Initialize dictionaries and variables for storing results
     power_dict = {}
@@ -138,7 +87,7 @@ def process_file(file_path, labels, fwd, high_pass, low_pass, window_length, end
     annotations = mne.Annotations(onset=onset, duration=duration, description=description)
 
     # annotations = mne.Annotations(onset=onset, duration=duration, description=description)
-    window_dict, annotations_dict = get_window_dict(raw, annotations)
+    window_dict, annotations_dict = get_window_dict_extra(raw, annotations)
     
     cov = get_cov(raw) # Get the covariance matrix
     compute_inverse = make_fast_inverse_operator(raw.info, fwd, cov, snr=snr)

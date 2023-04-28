@@ -4,10 +4,6 @@ import numpy as np
 from pathlib import Path
 import os
 
-# import vtk
-# from vtk import vtkPolyData, vtkDecimatePro
-# from vtk.util.numpy_support import vtk_to_numpy
-
 from typing import Dict, List, Tuple, Union
 
 def get_raw(edf_file_path: Path, filter: bool = True,
@@ -69,6 +65,70 @@ def pick_and_rename_MMIDB_channels(raw):
     raw.pick_channels(ch_names=EEG_20_div)
     raw.reorder_channels(EEG_20_div)
 
+    return raw
+
+def read_TUH_edf(file_path, high_pass=0.1, low_pass=100.0, notch=60.0):
+    # Read the EDF file
+    raw = mne.io.read_raw_edf(file_path, preload=True, verbose=False)
+
+    # Define the channel map to match 10-20 system channel names
+    # channel_map = {
+    #     'EEG C3-REF': 'C3', 'EEG P4-REF': 'P4', 'EEG T5-REF': 'P7', 'EEG F8-REF': 'F8', 'EEG F7-REF': 'F7',
+    #     'EEG C4-REF': 'C4', 'EEG PZ-REF': 'Pz', 'EEG FP2-REF': 'Fp2', 'EEG F4-REF': 'F4', 'EEG F3-REF': 'F3',
+    #     'EEG T6-REF': 'P8', 'EEG CZ-REF': 'Cz', 'EEG O2-REF': 'O2', 'EEG O1-REF': 'O1', 'EEG T2-REF': 'FT8',
+    #     'EEG T1-REF': 'FT7', 'EEG T4-REF': 'T8', 'EEG P3-REF': 'P3', 'EEG FZ-REF': 'Fz', 'EEG T3-REF': 'T7',
+    #     'EEG FP1-REF': 'Fp1', 'EEG C4-LE': 'C4', 'EEG P3-LE': 'P3', 'EEG FZ-LE': 'Fz', 'EEG F3-LE': 'F3',
+    #     'EEG FP1-LE': 'Fp1', 'EEG T6-LE': 'P8', 'EEG CZ-LE': 'Cz', 'EEG F8-LE': 'F8', 'EEG O1-LE': 'O1',
+    #     'EEG PZ-LE': 'Pz', 'EEG C3-LE': 'C3', 'EEG FP2-LE': 'Fp2', 'EEG O2-LE': 'O2', 'EEG FP1-LE': 'Fp1',
+    #     'EEG F7-LE': 'F7', 'EEG T1-LE': 'FT7', 'EEG T2-LE': 'FT8', 'EEG P4-LE': 'P4', 'EEG T4-LE': 'T8',
+    # }
+    
+    channel_map = {
+        'EEG C3-REF': 'C3', 'EEG P4-REF': 'P4', 'EEG T5-REF': 'T5', 'EEG F8-REF': 'F8', 'EEG F7-REF': 'F7',
+        'EEG C4-REF': 'C4', 'EEG PZ-REF': 'Pz', 'EEG FP2-REF': 'Fp2', 'EEG F4-REF': 'F4', 'EEG F3-REF': 'F3',
+        'EEG T6-REF': 'T6', 'EEG CZ-REF': 'Cz', 'EEG O2-REF': 'O2', 'EEG O1-REF': 'O1', 'EEG T2-REF': 'F2',
+        'EEG T1-REF': 'T1', 'EEG T4-REF': 'T4', 'EEG P3-REF': 'P3', 'EEG FZ-REF': 'Fz', 'EEG T3-REF': 'T3',
+        'EEG FP1-REF': 'Fp1', 'EEG C4-LE': 'C4', 'EEG P3-LE': 'P3', 'EEG FZ-LE': 'Fz', 'EEG F3-LE': 'F3',
+        'EEG FP1-LE': 'Fp1', 'EEG T6-LE': 'T6', 'EEG CZ-LE': 'Cz', 'EEG F8-LE': 'F8', 'EEG O1-LE': 'O1',
+        'EEG PZ-LE': 'Pz', 'EEG C3-LE': 'C3', 'EEG FP2-LE': 'Fp2', 'EEG O2-LE': 'O2', 'EEG FP1-LE': 'Fp1',
+        'EEG F7-LE': 'F7', 'EEG T1-LE': 'T1', 'EEG T2-LE': 'T2', 'EEG P4-LE': 'P4', 'EEG T4-LE': 'T4',
+    }
+    
+    
+
+    # Filter the channel_map to include only the channels present in the raw data
+    channel_map_sub = {k: v for k, v in channel_map.items() if k in raw.ch_names}
+    
+    # Standardize the raw data
+    mne.datasets.eegbci.standardize(raw)
+
+    # Rename the channels using the filtered channel_map
+    raw = raw.rename_channels(channel_map_sub)
+
+    # Create the standard 10-20 montage
+    montage = mne.channels.make_standard_montage('standard_1020')
+
+    # Set the montage for the raw data, ignoring missing channels
+    raw = raw.set_montage(montage, on_missing='ignore', verbose=False)
+    
+    # Pick only channels present in the filtered channel_map
+    raw = raw.pick_channels(list(channel_map_sub.values()))
+
+    # Set the average reference for the raw data
+    raw = raw.set_eeg_reference(ref_channels='average', projection=True, verbose=False)
+
+    # Apply the average reference projection
+    raw.apply_proj(verbose=False)
+
+    # Resample the raw data to 256 Hz
+    raw = raw.resample(256)
+    
+    # Filter the data
+    raw = raw.filter(high_pass, low_pass, fir_design='firwin', verbose=False)
+    
+    # Notch filter at 60 Hz
+    raw = raw.notch_filter(notch, fir_design='firwin', verbose=False)
+    
     return raw
 
 def get_annotations(edf_file_path: str, window_length = None) -> mne.Annotations:
@@ -248,55 +308,6 @@ def get_sources_tris(src):
     tris = np.array((tris_lh, tris_rh))
     return tris
 
-# def decimate_mesh(vertices, triangles, values=None, reduction = 0.5, verbose = False):
-#     #vertices_down, triangles_down, color_down = decimate_mesh(vertices, triangles, color, reduction=0.90, verbose=False)
-#     if values is None:
-#         values = np.ones(len(vertices))
-
-#     pd = vtk.vtkPolyData()
-#     points = vtk.vtkPoints()
-#     _ = [points.InsertNextPoint(*vertices[i]) for i in range(len(vertices))]
-
-#     cells = vtk.vtkCellArray()
-#     for triangle in triangles:
-#         cell = vtk.vtkTriangle()
-#         Ids = cell.GetPointIds()
-#         for kId in range(len(triangle)):
-#             Ids.SetId(kId, triangle[kId])
-#         cells.InsertNextCell(cell)
-
-#     vtkvalues = vtk.vtkFloatArray()
-#     vtkvalues.SetNumberOfComponents(1)
-#     vtkvalues.SetNumberOfTuples(len(vertices))
-#     for i in range(len(vertices)):
-#         vtkvalues.SetValue(i, values[i])
-
-#     pd.GetPointData().SetScalars(vtkvalues)
-#     pd.SetPoints(points)
-#     pd.SetPolys(cells)
-
-#     decimate = vtkDecimatePro()
-#     decimate.SetInputData(pd)
-#     decimate.SetTargetReduction(reduction)
-#     decimate.Update()
-
-#     dpd = vtkPolyData()
-#     dpd.ShallowCopy(decimate.GetOutput())
-
-#     if verbose:
-#         print("After decimation \n"
-#                 "-----------------\n"
-#                 "There are " + str(dpd.GetNumberOfPoints()) + " vertices.\n"
-#                 "There are " + str(dpd.GetNumberOfPolys()) + " triangles.\n")
-
-#     triangles_down = vtk_to_numpy(dpd.GetPolys().GetData())
-#     triangles_down = triangles_down.reshape(int(len(triangles_down)/4), 4)[:, 1:]
-#     vertices_down = vtk_to_numpy(dpd.GetPoints().GetData())
-#     values_down = vtk_to_numpy(dpd.GetPointData().GetScalars())
-        
-#     return vertices_down, triangles_down, values_down
-
-
 def get_z_values(vertices, tris):
     highest = np.max(vertices[:, :, 2].flatten())
     lowest = np.min(vertices[:, :, 2].flatten())
@@ -380,12 +391,10 @@ def get_window(raw, annotation):
     
     return window
 
-def get_window_dict(raw, annotations):
-
+def get_window_dict_extra(raw, annotations):
     window_dict = {}
     annotation_dict = {}
     
-
     for description in np.unique(annotations.description):
         list_of_windows = []
         list_of_annotations = []
@@ -398,6 +407,21 @@ def get_window_dict(raw, annotations):
         annotation_dict[description] = list_of_annotations
 
     return window_dict, annotation_dict
+
+def get_window_dict(raw, annotations):
+
+    window_dict = {}
+    
+    for description in np.unique(annotations.description):
+        list_of_windows = []
+        list_of_annotations = []
+        for annotation in annotations[annotations.description==description]:
+            window = get_window(raw, annotation)
+            list_of_windows.append(window)
+
+        window_dict[description] = list_of_windows
+
+    return window_dict
 
 
 
