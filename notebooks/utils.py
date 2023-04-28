@@ -4,9 +4,9 @@ import numpy as np
 from pathlib import Path
 import os
 
-import vtk
-from vtk import vtkPolyData, vtkDecimatePro
-from vtk.util.numpy_support import vtk_to_numpy
+# import vtk
+# from vtk import vtkPolyData, vtkDecimatePro
+# from vtk.util.numpy_support import vtk_to_numpy
 
 from typing import Dict, List, Tuple, Union
 
@@ -248,53 +248,53 @@ def get_sources_tris(src):
     tris = np.array((tris_lh, tris_rh))
     return tris
 
-def decimate_mesh(vertices, triangles, values=None, reduction = 0.5, verbose = False):
-    #vertices_down, triangles_down, color_down = decimate_mesh(vertices, triangles, color, reduction=0.90, verbose=False)
-    if values is None:
-        values = np.ones(len(vertices))
+# def decimate_mesh(vertices, triangles, values=None, reduction = 0.5, verbose = False):
+#     #vertices_down, triangles_down, color_down = decimate_mesh(vertices, triangles, color, reduction=0.90, verbose=False)
+#     if values is None:
+#         values = np.ones(len(vertices))
 
-    pd = vtk.vtkPolyData()
-    points = vtk.vtkPoints()
-    _ = [points.InsertNextPoint(*vertices[i]) for i in range(len(vertices))]
+#     pd = vtk.vtkPolyData()
+#     points = vtk.vtkPoints()
+#     _ = [points.InsertNextPoint(*vertices[i]) for i in range(len(vertices))]
 
-    cells = vtk.vtkCellArray()
-    for triangle in triangles:
-        cell = vtk.vtkTriangle()
-        Ids = cell.GetPointIds()
-        for kId in range(len(triangle)):
-            Ids.SetId(kId, triangle[kId])
-        cells.InsertNextCell(cell)
+#     cells = vtk.vtkCellArray()
+#     for triangle in triangles:
+#         cell = vtk.vtkTriangle()
+#         Ids = cell.GetPointIds()
+#         for kId in range(len(triangle)):
+#             Ids.SetId(kId, triangle[kId])
+#         cells.InsertNextCell(cell)
 
-    vtkvalues = vtk.vtkFloatArray()
-    vtkvalues.SetNumberOfComponents(1)
-    vtkvalues.SetNumberOfTuples(len(vertices))
-    for i in range(len(vertices)):
-        vtkvalues.SetValue(i, values[i])
+#     vtkvalues = vtk.vtkFloatArray()
+#     vtkvalues.SetNumberOfComponents(1)
+#     vtkvalues.SetNumberOfTuples(len(vertices))
+#     for i in range(len(vertices)):
+#         vtkvalues.SetValue(i, values[i])
 
-    pd.GetPointData().SetScalars(vtkvalues)
-    pd.SetPoints(points)
-    pd.SetPolys(cells)
+#     pd.GetPointData().SetScalars(vtkvalues)
+#     pd.SetPoints(points)
+#     pd.SetPolys(cells)
 
-    decimate = vtkDecimatePro()
-    decimate.SetInputData(pd)
-    decimate.SetTargetReduction(reduction)
-    decimate.Update()
+#     decimate = vtkDecimatePro()
+#     decimate.SetInputData(pd)
+#     decimate.SetTargetReduction(reduction)
+#     decimate.Update()
 
-    dpd = vtkPolyData()
-    dpd.ShallowCopy(decimate.GetOutput())
+#     dpd = vtkPolyData()
+#     dpd.ShallowCopy(decimate.GetOutput())
 
-    if verbose:
-        print("After decimation \n"
-                "-----------------\n"
-                "There are " + str(dpd.GetNumberOfPoints()) + " vertices.\n"
-                "There are " + str(dpd.GetNumberOfPolys()) + " triangles.\n")
+#     if verbose:
+#         print("After decimation \n"
+#                 "-----------------\n"
+#                 "There are " + str(dpd.GetNumberOfPoints()) + " vertices.\n"
+#                 "There are " + str(dpd.GetNumberOfPolys()) + " triangles.\n")
 
-    triangles_down = vtk_to_numpy(dpd.GetPolys().GetData())
-    triangles_down = triangles_down.reshape(int(len(triangles_down)/4), 4)[:, 1:]
-    vertices_down = vtk_to_numpy(dpd.GetPoints().GetData())
-    values_down = vtk_to_numpy(dpd.GetPointData().GetScalars())
+#     triangles_down = vtk_to_numpy(dpd.GetPolys().GetData())
+#     triangles_down = triangles_down.reshape(int(len(triangles_down)/4), 4)[:, 1:]
+#     vertices_down = vtk_to_numpy(dpd.GetPoints().GetData())
+#     values_down = vtk_to_numpy(dpd.GetPointData().GetScalars())
         
-    return vertices_down, triangles_down, values_down
+#     return vertices_down, triangles_down, values_down
 
 
 def get_z_values(vertices, tris):
