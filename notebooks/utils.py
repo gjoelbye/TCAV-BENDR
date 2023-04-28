@@ -71,18 +71,7 @@ def read_TUH_edf(file_path, high_pass=0.1, low_pass=100.0, notch=60.0):
     # Read the EDF file
     raw = mne.io.read_raw_edf(file_path, preload=True, verbose=False)
 
-    # Define the channel map to match 10-20 system channel names
-    # channel_map = {
-    #     'EEG C3-REF': 'C3', 'EEG P4-REF': 'P4', 'EEG T5-REF': 'P7', 'EEG F8-REF': 'F8', 'EEG F7-REF': 'F7',
-    #     'EEG C4-REF': 'C4', 'EEG PZ-REF': 'Pz', 'EEG FP2-REF': 'Fp2', 'EEG F4-REF': 'F4', 'EEG F3-REF': 'F3',
-    #     'EEG T6-REF': 'P8', 'EEG CZ-REF': 'Cz', 'EEG O2-REF': 'O2', 'EEG O1-REF': 'O1', 'EEG T2-REF': 'FT8',
-    #     'EEG T1-REF': 'FT7', 'EEG T4-REF': 'T8', 'EEG P3-REF': 'P3', 'EEG FZ-REF': 'Fz', 'EEG T3-REF': 'T7',
-    #     'EEG FP1-REF': 'Fp1', 'EEG C4-LE': 'C4', 'EEG P3-LE': 'P3', 'EEG FZ-LE': 'Fz', 'EEG F3-LE': 'F3',
-    #     'EEG FP1-LE': 'Fp1', 'EEG T6-LE': 'P8', 'EEG CZ-LE': 'Cz', 'EEG F8-LE': 'F8', 'EEG O1-LE': 'O1',
-    #     'EEG PZ-LE': 'Pz', 'EEG C3-LE': 'C3', 'EEG FP2-LE': 'Fp2', 'EEG O2-LE': 'O2', 'EEG FP1-LE': 'Fp1',
-    #     'EEG F7-LE': 'F7', 'EEG T1-LE': 'FT7', 'EEG T2-LE': 'FT8', 'EEG P4-LE': 'P4', 'EEG T4-LE': 'T8',
-    # }
-    
+    # Define the channel map to match 10-20 system channel names   
     channel_map = {
         'EEG C3-REF': 'C3', 'EEG P4-REF': 'P4', 'EEG T5-REF': 'T5', 'EEG F8-REF': 'F8', 'EEG F7-REF': 'F7',
         'EEG C4-REF': 'C4', 'EEG PZ-REF': 'Pz', 'EEG FP2-REF': 'Fp2', 'EEG F4-REF': 'F4', 'EEG F3-REF': 'F3',

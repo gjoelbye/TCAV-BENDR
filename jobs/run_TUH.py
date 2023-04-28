@@ -12,23 +12,22 @@ save_dir = "/work1/s194260/"
 now = datetime.datetime.now()
 now_str = now.strftime("%H%M%S_%d%m%y")
 
-
 for high, low in zip([1.0, 4.0, 8.0, 12.0, 30.0], [4.0, 8.0, 12.0, 30.0, 70.0]):
     name = f"TUH_{high}_{low}_{parcellation_name}_{now_str}"
 
     job = f"""#!/bin/sh
 #BSUB -J {name}
 #BSUB -q hpc
-#BSUB -n 30
-#BSUB -R "rusage[mem=16G]"
+#BSUB -n 25
+#BSUB -R "rusage[mem=8G]"
 #BSUB -R "span[hosts=1]"
-#BSUB -W 12:00
+#BSUB -W 2:00
 #BSUB -o logs/output_{name}_%J.out 
 #BSUB -e logs/error_{name}_%J.err 
 module load scipy/1.9.1-python-3.10.7
 module load cuda/11.7 
 source /zhome/33/6/147533/XAI/XAI-env/bin/activate
-python3.10 TUH_processer.py --high_pass {high} --low_pass {low} --window_length {window_length} --end_crop {end_crop} --n_processes {n_processes} --snr {snr} --edf_dir {edf_dir} --parcellation_name {parcellation_name} --save_dir {save_dir}"""
+python3.10 data_process/TUH_processer.py --high_pass {high} --low_pass {low} --window_length {window_length} --end_crop {end_crop} --n_processes {n_processes} --snr {snr} --edf_dir {edf_dir} --parcellation_name {parcellation_name} --save_dir {save_dir}"""
 
     with open('temp_submit.sh', 'w') as file:
         file.write(job)

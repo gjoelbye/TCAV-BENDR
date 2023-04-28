@@ -182,7 +182,7 @@ if __name__ == "__main__":
     
     tqdm.write(f"[INFO] Created dataset")
     
-    output_name = f"{parcellation_name}_{high_pass}_{low_pass}_{now_str}.npy"
+    output_name = f"{parcellation_name}_{high_pass}_{low_pass}_{now_str}_1-1.npy"
     
     np.save(save_dir / output_name, dataset, allow_pickle=True)
     
