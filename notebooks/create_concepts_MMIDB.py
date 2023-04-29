@@ -56,9 +56,6 @@ def get_raw(FILE, high_pass=0.5, low_pass=70, notch=60, SAMPLE_FREQ=256):
     return raw
 
 
-
-
-
 def make_concepts_folders(DATA_PATH_CONCEPTS, bands_to_use, label_names):
 
     # remove and remake concepts folder
@@ -73,7 +70,6 @@ def make_concepts_folders(DATA_PATH_CONCEPTS, bands_to_use, label_names):
         # make directory if it doesn't exist
             if not os.path.exists(f'{DATA_PATH_CONCEPTS}{band}_{label_names[label_idx]}'):
                 os.makedirs(f'{DATA_PATH_CONCEPTS}{band}_{label_names[label_idx]}')
-
 
 
 def min_max_normalize_dn3(x: torch.Tensor, low=-1, high=1):
@@ -161,10 +157,7 @@ def define_concepts(DATA_PATH_RAW, DATA_PATH_CONCEPTS, activity_dict, patients, 
                     save_concept(DATA_PATH_CONCEPTS, raw, concept, patient, run, str(raw_idx), NUMBER_CHANNELS=NUMBER_CHANNELS, NUMBER_SAMPLES=NUMBER_SAMPLES)
 
 
-       
-
 if __name__ == '__main__':
-
 
     # argparse?
     SNR = 100.0
@@ -204,9 +197,3 @@ if __name__ == '__main__':
                     patients, runs_to_use, bands_to_use, codes_to_use, label_names, 
                     WINDOW_LENGTH=4, NUMBER_CHANNELS=20, NUMBER_SAMPLES=1024, 
                     resting_state=resting_state)
-
-    
-
-
-    
-
