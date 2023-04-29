@@ -11,7 +11,7 @@ from notebooks.utils import *
 from functools import partial
 import multiprocessing
 
-def process_annotations(window_dict, labels, fwd, compute_inverse):
+def compute_power(window_dict, labels, fwd, compute_inverse):
     # Initialize dictionaries and variables for storing results
     power_dict = {}
     sum_of_src_label = [np.zeros(len(labels[0])), np.zeros(len(labels[1]))]
@@ -93,7 +93,7 @@ def process_file(file_path, labels, fwd, high_pass, low_pass, window_length, end
     compute_inverse = make_fast_inverse_operator(raw.info, fwd, cov, snr=snr)
 
     # Process annotations to get power_dict, sum_of_means, and total_count
-    power_dict, true_mean = process_annotations(window_dict, labels, fwd, compute_inverse)
+    power_dict, true_mean = compute_power(window_dict, labels, fwd, compute_inverse)
 
     # Compute the variance dictionary
     variance_dict = compute_variance(window_dict, labels, compute_inverse, true_mean)    
