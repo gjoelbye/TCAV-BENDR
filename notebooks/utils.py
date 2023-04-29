@@ -76,22 +76,20 @@ def read_TUH_edf(file_path, high_pass=0.1, low_pass=100.0, notch=60.0):
     channel_map = {
         'EEG C3-REF': 'C3', 'EEG P4-REF': 'P4', 'EEG T5-REF': 'T5', 'EEG F8-REF': 'F8', 'EEG F7-REF': 'F7',
         'EEG C4-REF': 'C4', 'EEG PZ-REF': 'Pz', 'EEG FP2-REF': 'Fp2', 'EEG F4-REF': 'F4', 'EEG F3-REF': 'F3',
-        'EEG T6-REF': 'T6', 'EEG CZ-REF': 'Cz', 'EEG O2-REF': 'O2', 'EEG O1-REF': 'O1', 'EEG T2-REF': 'F2',
-        'EEG T1-REF': 'T1', 'EEG T4-REF': 'T4', 'EEG P3-REF': 'P3', 'EEG FZ-REF': 'Fz', 'EEG T3-REF': 'T3',
+        'EEG T6-REF': 'T6', 'EEG CZ-REF': 'Cz', 'EEG O2-REF': 'O2', 'EEG O1-REF': 'O1', 'EEG T2-REF': 'F10',
+        'EEG T1-REF': 'F9', 'EEG T4-REF': 'T4', 'EEG P3-REF': 'P3', 'EEG FZ-REF': 'Fz', 'EEG T3-REF': 'T3',
         'EEG FP1-REF': 'Fp1', 'EEG C4-LE': 'C4', 'EEG P3-LE': 'P3', 'EEG FZ-LE': 'Fz', 'EEG F3-LE': 'F3',
         'EEG FP1-LE': 'Fp1', 'EEG T6-LE': 'T6', 'EEG CZ-LE': 'Cz', 'EEG F8-LE': 'F8', 'EEG O1-LE': 'O1',
-        'EEG PZ-LE': 'Pz', 'EEG C3-LE': 'C3', 'EEG FP2-LE': 'Fp2', 'EEG O2-LE': 'O2', 'EEG FP1-LE': 'Fp1',
-        'EEG F7-LE': 'F7', 'EEG T1-LE': 'T1', 'EEG T2-LE': 'T2', 'EEG P4-LE': 'P4', 'EEG T4-LE': 'T4',
+        'EEG PZ-LE': 'Pz', 'EEG C3-LE': 'C3', 'EEG FP2-LE': 'Fp2', 'EEG O2-LE': 'O2', 'EEG F7-LE': 'F7',
+        'EEG T1-LE': 'T9', 'EEG T2-LE': 'F10', 'EEG P4-LE': 'P4', 
     }
-    
-    
 
     # Filter the channel_map to include only the channels present in the raw data
     channel_map_sub = {k: v for k, v in channel_map.items() if k in raw.ch_names}
     
     # Standardize the raw data
     mne.datasets.eegbci.standardize(raw)
-
+    
     # Rename the channels using the filtered channel_map
     raw = raw.rename_channels(channel_map_sub)
 
