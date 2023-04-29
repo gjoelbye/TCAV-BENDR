@@ -32,6 +32,7 @@ def get_raw(edf_file_path: Path, filter: bool = True,
     
     raw = raw.set_eeg_reference(ref_channels='average', projection=True, verbose = False)
     raw = raw.set_montage(montage); # Set montage
+    raw.apply_proj(verbose = False)
 
     if filter:
         if resample:
