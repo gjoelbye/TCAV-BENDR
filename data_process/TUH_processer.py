@@ -142,6 +142,7 @@ if __name__ == "__main__":
     
     # Get forward model
     info = read_TUH_edf(edf_files[0]).info
+    print(info['ch_names'])
     fwd = get_fwd(info, trans, src_path, bem_path)
     
     tqdm.write("[INFO] Forward model loaded")
@@ -182,7 +183,7 @@ if __name__ == "__main__":
     
     tqdm.write(f"[INFO] Created dataset")
     
-    output_name = f"{parcellation_name}_{high_pass}_{low_pass}_{now_str}_1-1.npy"
+    output_name = f"{parcellation_name}_{high_pass}_{low_pass}_{snr}_{now_str}_no_proj.npy"
     
     np.save(save_dir / output_name, dataset, allow_pickle=True)
     
