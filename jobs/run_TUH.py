@@ -8,6 +8,8 @@ snr = 100.0
 edf_dir = "/work1/s194260/tuh_eeg/"
 parcellation_name = "HCPMMP1_combined"
 save_dir = "/work1/s194260/"
+proj = True
+exp_name = "test"
 
 now = datetime.datetime.now()
 now_str = now.strftime("%H%M%S_%d%m%y")
@@ -27,7 +29,7 @@ for high, low in zip([1.0, 4.0, 8.0, 12.0, 30.0], [4.0, 8.0, 12.0, 30.0, 70.0]):
 module load scipy/1.9.1-python-3.10.7
 module load cuda/11.7 
 source /zhome/33/6/147533/XAI/XAI-env/bin/activate
-python3.10 data_process/TUH_processer.py --high_pass {high} --low_pass {low} --window_length {window_length} --end_crop {end_crop} --n_processes {n_processes} --snr {snr} --edf_dir {edf_dir} --parcellation_name {parcellation_name} --save_dir {save_dir}"""
+python3.10 data_process/TUH_processer.py --high_pass {high} --low_pass {low} --window_length {window_length} --end_crop {end_crop} --n_processes {n_processes} --snr {snr} --edf_dir {edf_dir} --parcellation_name {parcellation_name} --save_dir {save_dir} --proj {proj} --name {exp_name}"""
 
     with open('temp_submit.sh', 'w') as file:
         file.write(job)
