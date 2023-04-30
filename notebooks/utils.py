@@ -68,7 +68,7 @@ def pick_and_rename_MMIDB_channels(raw):
 
     return raw
 
-def read_TUH_edf(file_path, high_pass=0.1, low_pass=100.0, notch=60.0, proj = True):
+def read_TUH_edf(file_path, high_pass=0.1, low_pass=100.0, notch=60.0, proj = False):
     # Read the EDF file
     raw = mne.io.read_raw_edf(file_path, preload=True, verbose=False)
 

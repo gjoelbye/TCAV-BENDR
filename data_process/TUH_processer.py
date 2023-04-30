@@ -112,7 +112,7 @@ if __name__ == "__main__":
     parser.add_argument("--parcellation_name", type=str, default="HCPMMP1_combined", help="Name of the parcellation to use")
     parser.add_argument("--save_dir", type=str, default="", help="Path to the directory to save the processed data")
     parser.add_argument("--name", type=str, default="", help="Name of the experiment")
-    parser.add_argument('--proj', type=bool, default=False, help="Whether to apply SSP projection vectors")
+    parser.add_argument('--proj', type=str, default=False, help="Whether to apply SSP projection vectors")
     args = parser.parse_args()
     
     end_crop = args.end_crop # Length of the recording to disregard at the beginning and end in seconds
@@ -125,11 +125,26 @@ if __name__ == "__main__":
     parcellation_name = args.parcellation_name # Name of the parcellation to use
     save_dir = Path(args.save_dir) # Path to the directory to save the processed data
     name = args.name
-    proj = args.proj
+    
+    assert args.proj in ['True', 'False'], "proj must be either True or False"
+    
+    proj = True if args.proj == 'True' else False
     
     now = datetime.datetime.now()
     now_str = now.strftime("%H%M%S_%d%m%y")
     tqdm.write(f"[INFO] Starting at {now_str}")
+    
+    tqdm.write(f"[INFO] High pass: {high_pass} Hz")
+    tqdm.write(f"[INFO] Low pass: {low_pass} Hz")
+    tqdm.write(f"[INFO] End crop: {end_crop} s")
+    tqdm.write(f"[INFO] Window length: {window_length} s")
+    tqdm.write(f"[INFO] Number of processes: {n_processes}")
+    tqdm.write(f"[INFO] Signal to noise ratio: {snr}")
+    tqdm.write(f"[INFO] EDF directory: {edf_dir}")
+    tqdm.write(f"[INFO] Parcellation name: {parcellation_name}")
+    tqdm.write(f"[INFO] Save directory: {save_dir}")
+    tqdm.write(f"[INFO] Name: {name}")
+    tqdm.write(f"[INFO] Projection: {proj}")
     
     # Get paths
     subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
@@ -193,6 +208,7 @@ if __name__ == "__main__":
     
     np.save(save_dir / output_name, dataset, allow_pickle=True)
     
-    tqdm.write(f"[INFO] Saved dataset. Total time: {str(datetime.datetime.now() - now)}")
+    tqdm.write(f"[INFO] Saved dataset to {output_name}")
+    tqdm.write(f"[INFO] Total time: {str(datetime.datetime.now() - now)}")
     
     

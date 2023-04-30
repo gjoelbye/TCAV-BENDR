@@ -8,7 +8,7 @@ snr = 100.0
 edf_dir = "/work1/s194260/tuh_eeg/"
 parcellation_name = "HCPMMP1_combined"
 save_dir = "/work1/s194260/"
-proj = True
+proj = False
 exp_name = "test"
 
 now = datetime.datetime.now()
