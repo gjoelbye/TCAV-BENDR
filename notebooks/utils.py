@@ -84,7 +84,6 @@ def read_TUH_edf(file_path, high_pass=0.1, low_pass=100.0, notch=60.0):
         'EEG F7-LE': 'F7', 'EEG T1-LE': 'T1', 'EEG T2-LE': 'T2', 'EEG P4-LE': 'P4', 'EEG T4-LE': 'T4',
     }
     
-    
 
     # Filter the channel_map to include only the channels present in the raw data
     channel_map_sub = {k: v for k, v in channel_map.items() if k in raw.ch_names}
