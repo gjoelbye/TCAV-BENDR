@@ -1,13 +1,15 @@
-%matplotlib auto
 import mne
 import matplotlib.pyplot as plt
+import os
+if os.getcwd().split("/")[-1] != 'BENDR-XAI': os.chdir("../")
+
 
 selected = []
-with open('tuh_final_selected.txt', 'r') as f:
+with open('data_process/tuh_final_selected.txt', 'r') as f:
     selected.extend(f.read().splitlines())
 
 deselected = []
-with open('tuh_final_deselected.txt', 'r') as f:
+with open('data_process/tuh_final_deselected.txt', 'r') as f:
     deselected.extend(f.read().splitlines())
 
 files = []

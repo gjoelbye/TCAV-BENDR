@@ -68,8 +68,8 @@ def compute_variance(window_dict, labels, compute_inverse, true_mean):
 
     return variance_dict
 
-def process_file(file_path, labels, fwd, high_pass, low_pass, window_length, end_crop, snr):
-    raw = read_TUH_edf(file_path, high_pass=high_pass, low_pass=low_pass)
+def process_file(file_path, labels, fwd, high_pass, low_pass, window_length, end_crop, snr, proj):
+    raw = read_TUH_edf(file_path, high_pass=high_pass, low_pass=low_pass, proj=proj)
     
     # Length of the recording in seconds
     length = (raw.n_times / raw.info['sfreq'])
@@ -111,6 +111,8 @@ if __name__ == "__main__":
     parser.add_argument("--edf_dir", type=str, default="/scratch/s194260/tuh_eeg", help="Path to the directory containing the EDF files")
     parser.add_argument("--parcellation_name", type=str, default="HCPMMP1_combined", help="Name of the parcellation to use")
     parser.add_argument("--save_dir", type=str, default="", help="Path to the directory to save the processed data")
+    parser.add_argument("--name", type=str, default="", help="Name of the experiment")
+    parser.add_argument('--proj', type=str, default=False, help="Whether to apply SSP projection vectors")
     args = parser.parse_args()
     
     end_crop = args.end_crop # Length of the recording to disregard at the beginning and end in seconds
@@ -122,10 +124,27 @@ if __name__ == "__main__":
     edf_dir = Path(args.edf_dir) # Path to the directory containing the EDF files
     parcellation_name = args.parcellation_name # Name of the parcellation to use
     save_dir = Path(args.save_dir) # Path to the directory to save the processed data
+    name = args.name
+    
+    assert args.proj in ['True', 'False'], "proj must be either True or False"
+    
+    proj = True if args.proj == 'True' else False
     
     now = datetime.datetime.now()
     now_str = now.strftime("%H%M%S_%d%m%y")
     tqdm.write(f"[INFO] Starting at {now_str}")
+    
+    tqdm.write(f"[INFO] High pass: {high_pass} Hz")
+    tqdm.write(f"[INFO] Low pass: {low_pass} Hz")
+    tqdm.write(f"[INFO] End crop: {end_crop} s")
+    tqdm.write(f"[INFO] Window length: {window_length} s")
+    tqdm.write(f"[INFO] Number of processes: {n_processes}")
+    tqdm.write(f"[INFO] Signal to noise ratio: {snr}")
+    tqdm.write(f"[INFO] EDF directory: {edf_dir}")
+    tqdm.write(f"[INFO] Parcellation name: {parcellation_name}")
+    tqdm.write(f"[INFO] Save directory: {save_dir}")
+    tqdm.write(f"[INFO] Name: {name}")
+    tqdm.write(f"[INFO] Projection: {proj}")
     
     # Get paths
     subjects_dir, subject, trans, src_path, bem_path = get_fsaverage()
@@ -142,13 +161,14 @@ if __name__ == "__main__":
     
     # Get forward model
     info = read_TUH_edf(edf_files[0]).info
+    
     fwd = get_fwd(info, trans, src_path, bem_path)
     
     tqdm.write("[INFO] Forward model loaded")
     
     custom_functions = partial(process_file, labels=labels, fwd=fwd, high_pass=high_pass,
                                low_pass=low_pass, window_length=window_length,
-                               end_crop=end_crop, snr=snr)
+                               end_crop=end_crop, snr=snr, proj=proj)
     
     tqdm.write(f"[INFO] Custom functions defined")
     
@@ -182,10 +202,13 @@ if __name__ == "__main__":
     
     tqdm.write(f"[INFO] Created dataset")
     
-    output_name = f"{parcellation_name}_{high_pass}_{low_pass}_{now_str}_no_proj.npy"
+    proj_applied = "proj" if proj else "no_proj"
+    
+    output_name = f"{parcellation_name}_{high_pass}_{low_pass}_{snr}_{now_str}_{proj_applied}_{name}.npy"
     
     np.save(save_dir / output_name, dataset, allow_pickle=True)
     
-    tqdm.write(f"[INFO] Saved dataset. Total time: {str(datetime.datetime.now() - now)}")
+    tqdm.write(f"[INFO] Saved dataset to {output_name}")
+    tqdm.write(f"[INFO] Total time: {str(datetime.datetime.now() - now)}")
     
     
