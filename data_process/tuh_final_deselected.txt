@@ -345,3 +345,8 @@ data/tuh_eeg/aaaaapks_s023_t002.edf
 data/tuh_eeg/aaaaapnl_s005_t008.edf
 data/tuh_eeg/aaaaaprc_s004_t005.edf
 data/tuh_eeg/aaaaapwe_s005_t000.edf
+data/tuh_eeg/aaaaavpk_s010_t009.edf
+data/tuh_eeg/aaaaavps_s003_t003.edf
+data/tuh_eeg/aaaaavps_s004_t004.edf
+data/tuh_eeg/aaaaavps_s009_t000.edf
+data/tuh_eeg/aaaaavps_s009_t001.edf

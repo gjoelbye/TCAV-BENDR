@@ -1,5 +1,0 @@
-data/tuh_eeg/aaaaavpk_s010_t009.edf
-data/tuh_eeg/aaaaavps_s003_t003.edf
-data/tuh_eeg/aaaaavps_s004_t004.edf
-data/tuh_eeg/aaaaavps_s009_t000.edf
-data/tuh_eeg/aaaaavps_s009_t001.edf
