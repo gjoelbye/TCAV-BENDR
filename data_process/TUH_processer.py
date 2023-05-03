@@ -7,6 +7,7 @@ from tqdm import tqdm
 from pathlib import Path
 import mne
 if os.getcwd().split("/")[-1] != 'BENDR-XAI': os.chdir("../")
+sys.path.append(os.getcwd())
 from notebooks.utils import *
 from functools import partial
 import multiprocessing
