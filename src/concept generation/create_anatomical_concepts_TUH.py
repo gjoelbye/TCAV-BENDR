@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
     info_dict = get_info_dict(ACTIVITY_PATH)
 
-    SNR = '50.0'
+    SNR = '100.0'
 
     activity_dict = get_activity_dict(ACTIVITY_PATH, SNR=SNR, info_dict=info_dict)
     bands = ['Delta', 'Theta', 'Alpha', 'Beta', 'Gamma']
@@ -174,9 +174,9 @@ if __name__ == '__main__':
     bands_to_use = bands #['Alpha'] #
     bands_naming = 'all' # 'alpha' #
 
-    standardize = 'divide' #'divide' # 'subtract'
-    sigma = False # False
-    absolute = False # True
+    standardize = 'subtract' #'divide' # 'subtract'
+    sigma = True # False
+    absolute = True # False
 
     PARCELLATION='HCPMMP1_combined'
 
