@@ -16,3 +16,9 @@ tqdm
 pyvistaqt
 torch
 
+setuptools
+cookiecutter
+flake8
+coverage
+Sphinx
+python-dotenv>=0.5.1
